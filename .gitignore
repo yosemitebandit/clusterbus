@@ -3,4 +3,5 @@ data/
 build/
 calc.py
 schema.txt
+bulkload*
 .DS_Store

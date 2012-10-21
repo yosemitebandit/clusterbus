@@ -1,13 +1,19 @@
 {
-    "route": "J"
-    , "start": "2012-09-20T13:52:27"
-    , "end": "2012-09-20T15:42:17"
+    "route": "{{route}}"
+    , "start": "{{start}}"
+    , "end": "{{end}}"
     , "route_aggregate": {
-        "metric_a": {
-            "value": 1.2
+        , "expected_frequency": {
+            "value": 17
         }
-        , "metric_b": {
-            "value": 3.7
+        , "headway_index": {
+            "value": 1.9
+        }
+        , "percent_tolerable_headway": {
+            "value": 58
+        }
+        , "std_dev_headway": {
+            "value": 1.4
         }
     }
     , "stop_stats": [{

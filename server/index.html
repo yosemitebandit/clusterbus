@@ -2,6 +2,7 @@
   <body>
   	<h1>Worst Arrivals</h1>
   		<table border=1>
+  		<thead>
   			<tr>
   				<th>Route</th>
   				<th>Stop ID</th>
@@ -11,6 +12,8 @@
   				<th>Arrival</th>
   				<th>Headway</th>
   			</tr>
+  		</thead>
+  		<tbody>
   		{% for arrival in worst_arrivals %}
   			<tr>
   				<td>{{arrival.route}}</td>
@@ -22,6 +25,7 @@
   				<td>{{arrival.headway}}</td>
   			</tr>
 	    {% endfor %}
+	    </tbody>
     	</table>
   </body>
 </html>
