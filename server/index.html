@@ -52,13 +52,16 @@
         </div>
       </div>
 
-      
-      <div id='data-table'>
-        <h4>Highest variances (system-wide)</h4>
-        <table class='table table-hover'>
+      <!--
+      <h4>Line metrics &ndash; the <span id='route-container' class='label label-success'>22</span> line</h4>
+      -->
+
+      <div id='data-table-container'>
+        <h4>Highest variances by stop</h4>
+        <table id='data-table' class='table table-hover'>
           <thead>
             <tr>
-              <th>Route</th>
+              <th>Line</th>
               <th>Stop</th>
               <th>Expected frequency (minutes)</th>
               <th>Headway index</th>
@@ -68,33 +71,21 @@
           </thead>
 
           <tbody>
-            <tr>
-              <td>22</td>
-              <td>Presidio Blvd and Geary</td>
-              <td>33</td>
-              <td>1.1</td>
-              <td>23%</td>
-              <td>2</td>
-            </tr>
-            <tr>
-              <td>22</td>
-              <td>Geary and 22nd</td>
-              <td>24</td>
-              <td>1.4</td>
-              <td>45%</td>
-              <td>18</td>
-            </tr>
-            <tr>
-              <td>22</td>
-              <td>Market and 4th</td>
-              <td>18</td>
-              <td>0.8</td>
-              <td>11%</td>
-              <td>3</td>
-            </tr>
           </tbody>
         </table>
       </div>
+
+      <script id='stop-row-template' type='text/x-handlebars-template'>
+        <tr>
+          <td>{{route}}</td>
+          <td>{{stop_name}}</td>
+          <td>{{expected_frequency.value}}</td>
+          <td>{{headway_index.value}}</td>
+          <td>{{percent_tolerable_headway.value}}%</td>
+          <td>{{std_dev_headway.value}}</td>
+        </tr>
+      </script>
+
 
       <div class='row'>
         <div class='span12'>
@@ -109,22 +100,40 @@
     <script src='js/handlebars-1.0.rc.1.js'></script>
     <script>
 
+      var source = $('#stop-row-template').html();
+      var stop_row_template = Handlebars.compile(source);
+
+      function populate_table(data) {
+        // kill the spinner..
+
+        // for each stop
+        var rows = ''
+        $.each(data.stop_stats, function(index, value) {
+          // inject the line name into this data structure
+          value.route = data.route;
+          // create a row and append
+          rows += stop_row_template(value);
+        });
+
+        console.log(rows);
+
+        $('#data-table > tbody').append(rows);
+
+      };
+
       $(function() {
 
         /* populate the table
         */
-        // request the data
-        // when complete, populate with handlebars
         var endpoint = 'http://cluster-bus.appspot.com/api';
         var req = $.ajax({
           url: endpoint
-          , dataType: 'json'
+          , dataType: 'jsonp'
           , data: null
           , success: function(data) {
-            console.log(data);
+            populate_table(data);
           }
         });
-
 
         /* initiate the maps
         */
