@@ -40,14 +40,11 @@ class API(webapp2.RequestHandler):
     end = self.request.get('end', '2012-10-11T09:30:00')
     route = self.request.get('route', '10')
     
-    template_values = {
-    	"start": start,
-    	"end": end,
-    	"route": route,
-	}
-    
     path = os.path.join(os.path.dirname(__file__), 'data.json')
-    self.response.out.write(template.render(path, template_values))
+    with open(path) as f:
+        response_data = json.loads(f.read())
+
+    self.response.out.write(response_data)
     
 
 app = webapp2.WSGIApplication([('/', MainPage),

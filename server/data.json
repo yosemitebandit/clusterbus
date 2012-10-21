@@ -1,7 +1,7 @@
 {
-    "route": "{{route}}"
-    , "start": "{{start}}"
-    , "end": "{{end}}"
+    "route": "22"
+    , "start": "2012-10-22T12:34:55"
+    , "end": "2012-10-23T15:34:55"
     , "route_aggregate": {
         , "expected_frequency": {
             "value": 17
