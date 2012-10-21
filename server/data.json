@@ -3,7 +3,7 @@
     , "start": "2012-10-22T12:34:55"
     , "end": "2012-10-23T15:34:55"
     , "route_aggregate": {
-        , "expected_frequency": {
+          "expected_frequency": {
             "value": 17
         }
         , "headway_index": {
