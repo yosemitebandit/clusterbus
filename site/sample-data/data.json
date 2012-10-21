@@ -1,0 +1,40 @@
+{
+    "route": "J"
+    , "start": "2012-09-20T13:52:27"
+    , "end": "2012-09-20T15:42:17"
+    , "route_aggregate": {
+        "metric_a": {
+            "value": 1.2
+        }
+        , "metric_b": {
+            "value": 3.7
+        }
+    }
+    , "stop_stats": [{
+        "stop_id": "3148"
+        , "lat": 37.456
+        , "lon": 12.123
+        , "metric_a": {
+            "value": 24
+            , "rank": 3
+        }
+        , "metric_b": {
+            "value": 17
+            , "rank": 11
+        }
+    }
+    , {
+        "stop_id": "3148"
+        , "lat": 35.987
+        , "lon": 11.321
+        , "metric_a": {
+            "value": 24
+            , "rank": 3
+        }
+        , "metric_b": {
+            "value": 17
+            , "rank": 11
+        }
+    }]
+}
+
