@@ -1,0 +1,5 @@
+data/
+*.pyc
+build/
+calc.py
+schema.txt
