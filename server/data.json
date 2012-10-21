@@ -1,0 +1,58 @@
+{
+    "route": "J"
+    , "start": "2012-09-20T13:52:27"
+    , "end": "2012-09-20T15:42:17"
+    , "route_aggregate": {
+        "metric_a": {
+            "value": 1.2
+        }
+        , "metric_b": {
+            "value": 3.7
+        }
+    }
+    , "stop_stats": [{
+          "stop_id": "3148"
+        , "stop_name": "brannan"
+        , "lat": 37.456
+        , "lon": 12.123 
+        , "expected_frequency": {
+            "value": 18
+            , "rank": 3
+        }
+        , "headway_index": {
+            "value": 1.7
+            , "rank": 11
+        }
+        , "percent_tolerable_headway": {
+            "value": 55
+            , "rank": 11
+        }
+        , "std_dev_headway": {
+            "value": 1.3
+            , "rank": 11
+        }
+    }
+    , {
+          "stop_id": "3149"
+        , "stop_name": "townsend"
+        , "lat": 35.987
+        , "lon": 11.321
+        , "expected_frequency": {
+            "value": 16
+            , "rank": 3
+        }
+        , "headway_index": {
+            "value": 1.3
+            , "rank": 11
+        }
+        , "percent_tolerable_headway": {
+            "value": 89
+            , "rank": 11
+        }
+        , "std_dev_headway": {
+            "value": 1.1
+            , "rank": 11
+        }
+    }]
+}
+
