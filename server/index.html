@@ -110,7 +110,11 @@
     <script src='js/gmaps.js'></script>
     <script src='js/handlebars-1.0.rc.1.js'></script>
     <script src='js/underscore-min.js'></script>
+    <script src='js/palette.js'></script>
     <script>
+
+      // init a palette
+      var palette = new Palette(0.95, 0.95);
 
       var all_stops = [];
 
@@ -144,20 +148,28 @@
 
       function populate_map(map, data) {
         // hardcoded scale
-        var max_headway = 2;
-        var min_headway = 0;
+        var max_headway = 2.0;
+        var min_headway = 1.0;
 
         $.each(data.stop_stats, function(index, value) {
+
+          //var scaled_value = 0.4 * (value.headway_index.value - min_headway) / (max_headway - min_headway)
+          var scaled_value = 0.4 * (max_headway - value.headway_index.value) / (max_headway - min_headway)
+          console.log(scaled_value);
+          var color = '#' + palette.generate_hex_color(scaled_value);
+          console.log(color);
+
           var marker = new google.maps.Marker({
             position: new google.maps.LatLng(value.lat, value.lon)
             , icon: {
               path: google.maps.SymbolPath.CIRCLE
               , fillOpacity: 0.2
-              , fillColor: 'ff0000'
+              , fillColor: color // 'ff0000'
               , strokeOpacity: 1.0
-              , strokeColor: 'ff000'
+              , strokeColor: color // 'ff0000'
               , strokeWeight: 1.0
-              , scale: 10*(value.headway_index.value - min_headway) / (max_headway - min_headway)
+              //, scale: 10*(value.headway_index.value - min_headway) / (max_headway - min_headway)
+              , scale: 10
             }
             , map: map.map
           });
@@ -173,6 +185,7 @@
 
 
       $(function() {
+
         /* initiate the maps
         */
         // start and end times for each map
@@ -206,12 +219,12 @@
             , data: {
               start: maps[i][1][0]
               , end: maps[i][1][1]
+              , route: '22'
             }
             , success: function(data) {
               extend_results(data);
 
               populate_table(data);
-
 
               for (var i in maps) {
                 console.log(data.start);
