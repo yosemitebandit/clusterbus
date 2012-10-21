@@ -43,7 +43,7 @@ class API(webapp2.RequestHandler):
     
     path = os.path.join(os.path.dirname(__file__), 'data.json')
     with open(path) as f:
-        response_data = json.loads(f.read())
+        response_data = json.dumps(f.read())
 
     # wrap as JSONP if callback is specified
     if callback:
