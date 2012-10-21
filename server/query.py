@@ -48,8 +48,26 @@ def query(data, headway_torelance=100):
     rank(result, 'percent_tolerable_headway')
     rank(result, 'std_dev_headway')
 
-    return result
+    # summary for all
+    summary = summary_for_stop(data, headway_torelance)
 
+    return {
+      "route_aggregate": dict(
+        expected_frequency = dict(
+            value = summary.expected_frequency,
+        ),
+        headway_index = dict(
+            value = summary.headway_index,
+        ),
+        percent_tolerable_headway= dict(
+            value = summary.percent_tolerable_headway,
+        ),
+        std_dev_headway = dict(
+            value = summary.std_dev_headway,
+        ),
+      ),
+      "stop_stats": result,
+      }
 
 def summary_for_stop(lst, headway_torelance):
     H = [x.headway for x in lst]
