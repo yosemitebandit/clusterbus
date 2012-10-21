@@ -8,8 +8,9 @@ class AttrObj(object):
         self.__dict__.update(**kwargs)
 
 
-def query(data, headway_torelance=100):
+def query(data, headway_torelance=300):
     grouped = []
+    data = sorted(data, key=lambda x: x.stop_id)
     for k,g in itertools.groupby(data, key=lambda x: x.stop_id):
         grouped.append((k, list(g)))
     grouped.sort()
@@ -24,7 +25,7 @@ def query(data, headway_torelance=100):
             lat = item0.lat,
             lon = item0.lon,
             expected_frequency = dict(
-                value = summary.expected_frequency,
+                value = summary.expected_frequency/60.0,
                 rank = 3,
             ),
             headway_index = dict(
@@ -32,11 +33,11 @@ def query(data, headway_torelance=100):
                 rank = 3,
             ),
             percent_tolerable_headway= dict(
-                value = summary.percent_tolerable_headway,
+                value = summary.percent_tolerable_headway*100,
                 rank = 3,
             ),
             std_dev_headway = dict(
-                value = summary.std_dev_headway,
+                value = summary.std_dev_headway/60.0,
                 rank = 3,
             ),
         )
@@ -47,7 +48,7 @@ def query(data, headway_torelance=100):
     rank(result, 'headway_index')
     rank(result, 'percent_tolerable_headway')
     rank(result, 'std_dev_headway')
-
+	
     return result
 
 

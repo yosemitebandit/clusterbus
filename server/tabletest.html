@@ -3,23 +3,33 @@
   	<h1>Worst Arrivals</h1>
   		<table border=1>
   			<tr>
-  				<th>Route</th>
-  				<th>Stop ID</th>
-  				<th>Stop Name</th>
+  				<th>Expected Frequency</th>
+  				<th>Expected Frequency Rank</th>
+  				<th>Headway Index</th>
+  				<th>Headway Index Rank</th>
+  				<th>% Tolerable Headway</th>
+  				<th>% Tolerable Headway Rank</th>
+  				<th>Std Dev Headway</th>
+  				<th>Std Dev Headway Rank</th>
   				<th>Lat</th>
   				<th>Lon</th>
-  				<th>Arrival</th>
-  				<th>Headway</th>
+  				<th>Stop ID</th>
+  				<th>Stop Name</th>
   			</tr>
   		{% for arrival in worst_arrivals %}
   			<tr>
-  				<td>{{arrival.route}}</td>
-  				<td>{{arrival.stop_id}}</td>
-  				<td>{{arrival.stop_name}}</td>
+  				<td>{{arrival.expected_frequency.value}}</td>
+  				<td>{{arrival.expected_frequency.rank}}</td>
+  				<td>{{arrival.headway_index.value}}</td>
+  				<td>{{arrival.headway_index.rank}}</td>
+  				<td>{{arrival.percent_tolerable_headway.value}}</td>
+  				<td>{{arrival.percent_tolerable_headway.rank}}</td>
+  				<td>{{arrival.std_dev_headway.value}}</td>
+  				<td>{{arrival.std_dev_headway.rank}}</td>
   				<td>{{arrival.lat}}</td>
   				<td>{{arrival.lon}}</td>
-  				<td>{{arrival.arrival}}</td>
-  				<td>{{arrival.headway}}</td>
+  				<td>{{arrival.stop_id}}</td>
+  				<td>{{arrival.stop_name}}</td>
   			</tr>
 	    {% endfor %}
     	</table>
