@@ -1,31 +1,163 @@
-<html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <link href='css/bootstrap.min.css' rel='stylesheet' />
+    <link href='css/bootstrap-responsive.min.css' rel='stylesheet' />
+    <link href='css/demo.css' rel='stylesheet' />
+  </head>
+
   <body>
-  	<h1>Worst Arrivals</h1>
-  		<table border=1>
-  		<thead>
-  			<tr>
-  				<th>Route</th>
-  				<th>Stop ID</th>
-  				<th>Stop Name</th>
-  				<th>Lat</th>
-  				<th>Lon</th>
-  				<th>Arrival</th>
-  				<th>Headway</th>
-  			</tr>
-  		</thead>
-  		<tbody>
-  		{% for arrival in worst_arrivals %}
-  			<tr>
-  				<td>{{arrival.route}}</td>
-  				<td>{{arrival.stop_id}}</td>
-  				<td>{{arrival.stop_name}}</td>
-  				<td>{{arrival.lat}}</td>
-  				<td>{{arrival.lon}}</td>
-  				<td>{{arrival.arrival}}</td>
-  				<td>{{arrival.headway}}</td>
-  			</tr>
-	    {% endfor %}
-	    </tbody>
-    	</table>
+    <div class='container'>
+
+      <ul class='nav nav-pills'>
+        <li class='active'>
+          <a href='#'>clusterbus !</a>
+        </li>
+        <li class='pull-right'>
+          <a href='#'>api</a>
+        </li>
+        <li class='pull-right'>
+          <a href='#'>about</a>
+        </li>
+      </ul>
+
+      <div id='maps' class='row show-grid'>
+        <div class='span4'>
+          <div class='map' id='map-one'>
+          </div>
+        </div>
+
+        <div class='span4'>
+          <div class='map' id='map-two'>
+          </div>
+        </div>
+
+        <div class='span4'>
+          <div class='map' id='map-three'>
+          </div>
+        </div>
+      </div>
+
+      <div id='map-labels' class='row'>
+        <div class='span4'>
+          <p>Rush hour &ndash; weekdays, 7am-10am and 4pm-6pm</p>
+        </div>
+
+        <div class='span4'>
+          <p>The calm &ndash; 11pm-3pm on weekdays</p>
+        </div>
+
+        <div class='span4'>
+          <p>Find me in the club &ndash; Friday and Saturday, 10pm-1am</p>
+        </div>
+      </div>
+
+      
+      <div id='data-table'>
+        <h4>Highest variances (system-wide)</h4>
+        <table class='table table-hover'>
+          <thead>
+            <tr>
+              <th>Route</th>
+              <th>Stop</th>
+              <th>Expected frequency (minutes)</th>
+              <th>Headway index</th>
+              <th>Percent tolerable headway</th>
+              <th>Headway standard deviation (minutes)</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td>22</td>
+              <td>Presidio Blvd and Geary</td>
+              <td>33</td>
+              <td>1.1</td>
+              <td>23%</td>
+              <td>2</td>
+            </tr>
+            <tr>
+              <td>22</td>
+              <td>Geary and 22nd</td>
+              <td>24</td>
+              <td>1.4</td>
+              <td>45%</td>
+              <td>18</td>
+            </tr>
+            <tr>
+              <td>22</td>
+              <td>Market and 4th</td>
+              <td>18</td>
+              <td>0.8</td>
+              <td>11%</td>
+              <td>3</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class='row'>
+        <div class='span12'>
+          <p class='hattery muted pull-right'>built in a hurry at <a href="http://hattery.com/reroute/" target=_blank>reroute<span class='bump-down'>/</span>sf</a></p>
+        </div>
+      </div>
+    </div>
+
+    <script src='js/jquery.min.js'></script>
+    <script src='http://maps.google.com/maps/api/js?sensor=true'></script>
+    <script src='js/gmaps.js'></script>
+    <script>
+
+      $(function() {
+        var sf = [37.778313, -122.44957, 11];
+
+        var map_one = map_factory('#map-one', sf);
+        var map_two = map_factory('#map-two', sf);
+        var map_three = map_factory('#map-three', sf);
+
+        // mm..global
+        maps = [map_one, map_two, map_three];
+      });
+
+
+      /* synching all map controls
+      */
+      function update_zoom(zoom) {
+        for (i in maps) {
+          if (maps[i].map.zoom != zoom) maps[i].map.setZoom(zoom);
+        }
+      }
+
+      function update_center(center) {
+        for (i in maps) {
+          if (maps[i].map.center != center) maps[i].map.panTo(center);
+        }
+      }
+
+
+      /* the cartographer
+      */
+      function map_factory(div, loc) {
+        return new GMaps({
+          div: div
+          , lat: loc[0]
+          , lng: loc[1]
+          , zoom: loc[2]
+          , panControl: false
+          , zoomControl: false
+          , streetViewControl: false
+          , mapTypeControl: false
+          , scaleControl: false
+
+          , center_changed: function() {
+            update_center(this.center);
+          }
+          , zoom_changed: function() {
+            update_zoom(this.zoom);
+          }
+        });
+      }
+
+    </script>
   </body>
 </html>
