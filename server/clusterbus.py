@@ -54,8 +54,11 @@ class API(webapp2.RequestHandler):
     stop_id = self.request.get('stop_id', 'all')
     
     
+    template_values = {
+	}
     
-    self.response.out.write(json.dumps({'start': start, 'end': end}))
+    path = os.path.join(os.path.dirname(__file__), 'data.json')
+    self.response.out.write(template.render(path, template_values))
     
 
 app = webapp2.WSGIApplication([('/', MainPage),
