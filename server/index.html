@@ -112,8 +112,6 @@
     <script src='js/underscore-min.js'></script>
     <script>
 
-      // oh god
-      callbacks_fired = 0;
       var all_stops = [];
 
       var stop_source = $('#stop-row-template').html();
@@ -144,37 +142,26 @@
       };
 
 
-      function populate_map(maps, data) {
-        if (callbacks_fired == 3) {
-          console.log('ready');
+      function populate_map(map, data) {
+        // hardcoded scale
+        var max_headway = 2;
+        var min_headway = 0;
 
-          var headway_indices = [];
-          $.each(all_stops, function(index, value) {
-            headway_indices.push(value.headway_index.value);
+        $.each(data.stop_stats, function(index, value) {
+          var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(value.lat, value.lon)
+            , icon: {
+              path: google.maps.SymbolPath.CIRCLE
+              , fillOpacity: 0.2
+              , fillColor: 'ff0000'
+              , strokeOpacity: 1.0
+              , strokeColor: 'ff000'
+              , strokeWeight: 1.0
+              , scale: 10*(value.headway_index.value - min_headway) / (max_headway - min_headway)
+            }
+            , map: map.map
           });
-
-          var max_headway = _.max(headway_indices);
-          var min_headway = _.min(headway_indices);
-
-          $.each(all_stops, function(index, value) {
-            var marker = new google.maps.Marker({
-              position: new google.maps.LatLng(value.lat, value.lon)
-              , icon: {
-                path: google.maps.SymbolPath.CIRCLE
-                , fillOpacity: 0.2
-                , fillColor: 'ff0000'
-                , strokeOpacity: 1.0
-                , strokeColor: 'ff000'
-                , strokeWeight: 1.0
-                , scale: 10*(value.headway_index.value - min_headway) / (max_headway - min_headway) ///10*value.headway_index.value
-              }
-              , map: maps[0][0].map
-
-            });
-          });
-
-        }
-
+        });
       };
 
 
@@ -192,7 +179,7 @@
         var am_rush = ['2012-10-11T06:30:00', '2012-10-11T09:30:00']
         var midday = ['2012-10-11T09:30:00', '2012-10-11T16:30:00']
         // not quite weekend..
-        var weekend = ['2012-10-11T06:00:00', '2012-10-11T19:00:00']
+        var weekend = ['2012-10-13T06:00:00', '2012-10-13T19:00:00']
 
         var sf = [37.778313, -122.44957, 11];
         var map_one = map_factory('#map-one', sf);
@@ -221,14 +208,18 @@
               , end: maps[i][1][1]
             }
             , success: function(data) {
-              //console.log(data);
-
               extend_results(data);
-              callbacks_fired += 1;
 
               populate_table(data);
 
-              populate_maps(maps);
+
+              for (var i in maps) {
+                console.log(data.start);
+                if (data.start == maps[i][1][0] && data.end == maps[i][1][1]) {
+                  populate_map(maps[i][0], data);
+                }
+              }
+
             }
           });
         }
