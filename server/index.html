@@ -109,7 +109,12 @@
     <script src='http://maps.google.com/maps/api/js?sensor=true'></script>
     <script src='js/gmaps.js'></script>
     <script src='js/handlebars-1.0.rc.1.js'></script>
+    <script src='js/underscore-min.js'></script>
     <script>
+
+      // oh god
+      callbacks_fired = 0;
+      var all_stops = [];
 
       var stop_source = $('#stop-row-template').html();
       var stop_row_template = Handlebars.compile(stop_source);
@@ -119,10 +124,12 @@
 
       function populate_table(data) {
         // kill the spinner..
-        var rows = ''
+
+        var rows = '';
 
         // inject the route
         data.route_aggregate['route'] = data.route;
+        // save the route aggregate
         rows += aggregate_row_template(data.route_aggregate);
 
         $.each(data.stop_stats, function(index, value) {
@@ -132,32 +139,100 @@
           rows += stop_row_template(value);
         });
 
-        // populate
+        // append to table
         $('#data-table > tbody').append(rows);
       };
 
-      $(function() {
 
-        /* populate the table
-        */
-        var endpoint = 'http://cluster-bus.appspot.com/api';
-        var req = $.ajax({
-          url: endpoint
-          , dataType: 'jsonp'
-          , data: null
-          , success: function(data) {
-            populate_table(data);
-          }
+      function populate_map(maps, data) {
+        if (callbacks_fired == 3) {
+          console.log('ready');
+
+          var headway_indices = [];
+          $.each(all_stops, function(index, value) {
+            headway_indices.push(value.headway_index.value);
+          });
+
+          var max_headway = _.max(headway_indices);
+          var min_headway = _.min(headway_indices);
+
+          $.each(all_stops, function(index, value) {
+            var marker = new google.maps.Marker({
+              position: new google.maps.LatLng(value.lat, value.lon)
+              , icon: {
+                path: google.maps.SymbolPath.CIRCLE
+                , fillOpacity: 0.2
+                , fillColor: 'ff0000'
+                , strokeOpacity: 1.0
+                , strokeColor: 'ff000'
+                , strokeWeight: 1.0
+                , scale: 10*(value.headway_index.value - min_headway) / (max_headway - min_headway) ///10*value.headway_index.value
+              }
+              , map: maps[0][0].map
+
+            });
+          });
+
+        }
+
+      };
+
+
+      function extend_results(data) {
+        $.each(data.stop_stats, function(index, value) {
+          all_stops.push(value);
         });
+      };
 
+
+      $(function() {
         /* initiate the maps
         */
+        // start and end times for each map
+        var am_rush = ['2012-10-11T06:30:00', '2012-10-11T09:30:00']
+        var midday = ['2012-10-11T09:30:00', '2012-10-11T16:30:00']
+        // not quite weekend..
+        var weekend = ['2012-10-11T06:00:00', '2012-10-11T19:00:00']
+
         var sf = [37.778313, -122.44957, 11];
         var map_one = map_factory('#map-one', sf);
         var map_two = map_factory('#map-two', sf);
         var map_three = map_factory('#map-three', sf);
         // mm..global
-        maps = [map_one, map_two, map_three];
+        maps = [[map_one, am_rush]
+          , [map_two, midday]
+          , [map_three, weekend]
+        ];
+
+        /* populate the maps
+        pool all the stop_stats responses
+        */
+        var endpoint = 'http://cluster-bus.appspot.com/api';
+        // flip json/jsonp !!
+        //var endpoint = 'data.json';
+
+        for (var i in maps) {
+          var req = $.ajax({
+            url: endpoint
+            // flip back to jsonp
+            , dataType: 'jsonp'
+            , data: {
+              start: maps[i][1][0]
+              , end: maps[i][1][1]
+            }
+            , success: function(data) {
+              //console.log(data);
+
+              extend_results(data);
+              callbacks_fired += 1;
+
+              populate_table(data);
+
+              populate_maps(maps);
+            }
+          });
+        }
+
       });
 
 
@@ -165,13 +240,13 @@
       */
       function update_zoom(zoom) {
         for (i in maps) {
-          if (maps[i].map.zoom != zoom) maps[i].map.setZoom(zoom);
+          if (maps[i][0].map.zoom != zoom) maps[i][0].map.setZoom(zoom);
         }
       }
 
       function update_center(center) {
         for (i in maps) {
-          if (maps[i].map.center != center) maps[i].map.panTo(center);
+          if (maps[i][0].map.center != center) maps[i][0].map.panTo(center);
         }
       }
 
