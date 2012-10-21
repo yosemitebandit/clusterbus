@@ -25,7 +25,7 @@ def query(data, headway_torelance=300):
             lat = item0.lat,
             lon = item0.lon,
             expected_frequency = dict(
-                value = summary.expected_frequency/60.0,
+                value = "{:10.4f}".format(summary.expected_frequency/60.0),
                 rank = 3,
             ),
             headway_index = dict(

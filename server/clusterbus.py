@@ -48,8 +48,16 @@ class API(webapp2.RequestHandler):
 
     arrivals = VehicleArrival.all().filter("arrival > ", start).filter("arrival < ", end).filter("route = ", route)
     processed_arrivals = query.query(arrivals)
-
-    response_data = json.dumps( processed_arrivals )
+    
+    response_data = {
+    	'route': route
+    	, 'start': start.isoformat()
+    	, 'end': end.isoformat()
+    	, 'route_aggregate': {}
+    	, 'stop_stats': processed_arrivals
+    }
+    
+    response_data = json.dumps(response_data)
 
     # wrap as JSONP if callback is specified
     if callback:
