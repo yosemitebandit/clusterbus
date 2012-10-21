@@ -29,7 +29,7 @@ class TableView(webapp2.RequestHandler):
     arrivals = VehicleArrival.all().filter("arrival > ", start).filter("arrival < ", end).filter("route = ", route)
     processed_arrivals = query.query(arrivals)
     template_values = {
-      'worst_arrivals': processed_arrivals,
+      'worst_arrivals': processed_arrivals['stop_stats'],
 	}
     path = os.path.join(os.path.dirname(__file__), 'tabletest.html')
     self.response.out.write(template.render(path, template_values))
@@ -53,8 +53,8 @@ class API(webapp2.RequestHandler):
     	'route': route
     	, 'start': start.isoformat()
     	, 'end': end.isoformat()
-    	, 'route_aggregate': {}
-    	, 'stop_stats': processed_arrivals
+    	, 'route_aggregate': processed_arrivals['route_aggregate']
+    	, 'stop_stats': processed_arrivals['stop_stats']
     }
     
     response_data = json.dumps(response_data)
@@ -65,6 +65,12 @@ class API(webapp2.RequestHandler):
 
     self.response.out.write(response_data)
 
+
+
+class DeleteRoute(webapp2.RequestHandler):
+  def get(self):
+  	route = self.request.get('route')
+  	self.response.out.write("Deleted route %s (not really, just a placeholder for a database cleanup method)" % route )
 
 
 class APItest(webapp2.RequestHandler):
@@ -91,5 +97,6 @@ class APItest(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([('/', MainPage),
                               ('/table', TableView),
+                              ('/delete', DeleteRoute),
                               ('/api', API)],
                               debug=True)

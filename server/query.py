@@ -25,19 +25,19 @@ def query(data, headway_torelance=300):
             lat = item0.lat,
             lon = item0.lon,
             expected_frequency = dict(
-                value = "{:10.4f}".format(summary.expected_frequency/60.0),
+                value = int(round(float(summary.expected_frequency/60.0))),
                 rank = 3,
             ),
             headway_index = dict(
-                value = summary.headway_index,
+                value = "%.2f" % summary.headway_index,
                 rank = 3,
             ),
             percent_tolerable_headway= dict(
-                value = summary.percent_tolerable_headway*100,
+                value = int(round(summary.percent_tolerable_headway*100)),
                 rank = 3,
             ),
             std_dev_headway = dict(
-                value = summary.std_dev_headway/60.0,
+                value = "%.2f" % float(summary.std_dev_headway/60.0),
                 rank = 3,
             ),
         )
