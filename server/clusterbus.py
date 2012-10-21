@@ -16,23 +16,13 @@ class MainPage(webapp2.RequestHandler):
             </body>
           </html>""")
 
+def query_headways():
+  """hello"""
 
 class TableView(webapp2.RequestHandler):
   def get(self):
     self.response.headers['Content-Type'] = 'text/html'
-    testitems = [ 'test_item1', 'test_item2' ]
     worst_arrivals = VehicleArrival.all().order('-headway').run(limit=10)
-	
-    """testvehicle = VehicleArrival(
-	  route = '38',
-	  stop_id = '1234',
-	  stop_name = 'Geary-Fillmore',
-	  lat = 123.456,
-	  lon = 789.321,
-	  arrival = datetime.datetime.now(),
-	  headway = 3600,
-    )"""
-    
     template_values = {
       'worst_arrivals': worst_arrivals,
 	}
@@ -44,17 +34,16 @@ class API(webapp2.RequestHandler):
   def get(self):
     self.response.headers['Content-Type'] = 'application/json'
     
-    # add intelligent defaults
-    start = self.request.get('start', 2012)
-    end = self.request.get('end', 2011)  # 2012-10-09T14:24:34
-    
-    # if route is None, return data for all routes
-    route = self.request.get('route', 'all')
-    
-    stop_id = self.request.get('stop_id', 'all')
-    
+    #current defaults are based on sample data
+    #to do: change to intelligent defaults e.g. today, all routes
+    start = self.request.get('start', '2012-10-11T06:30:00' )
+    end = self.request.get('end', '2012-10-11T09:30:00')
+    route = self.request.get('route', '10')
     
     template_values = {
+    	"start": start,
+    	"end": end,
+    	"route": route,
 	}
     
     path = os.path.join(os.path.dirname(__file__), 'data.json')

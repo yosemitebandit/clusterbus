@@ -1,5 +1,5 @@
 import datetime
-import models
+from models import VehicleArrival
 from google.appengine.ext import db
 from google.appengine.tools import bulkloader
 
