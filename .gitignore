@@ -1,6 +1,4 @@
 data/
 *.pyc
 build/
-calc.py
-schema.txt
 .DS_Store
