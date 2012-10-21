@@ -86,6 +86,17 @@
         </tr>
       </script>
 
+      <script id='aggregate-row-template' type='text/x-handlebars-template'>
+        <tr>
+          <td>{{route}}</td>
+          <td><span class='label label-success'>All stops</span></td>
+          <td>{{expected_frequency.value}}</td>
+          <td>{{headway_index.value}}</td>
+          <td>{{percent_tolerable_headway.value}}%</td>
+          <td>{{std_dev_headway.value}}</td>
+        </tr>
+      </script>
+
 
       <div class='row'>
         <div class='span12'>
@@ -100,14 +111,20 @@
     <script src='js/handlebars-1.0.rc.1.js'></script>
     <script>
 
-      var source = $('#stop-row-template').html();
-      var stop_row_template = Handlebars.compile(source);
+      var stop_source = $('#stop-row-template').html();
+      var stop_row_template = Handlebars.compile(stop_source);
+
+      var aggregate_source = $('#aggregate-row-template').html();
+      var aggregate_row_template = Handlebars.compile(aggregate_source);
 
       function populate_table(data) {
         // kill the spinner..
-
-        // for each stop
         var rows = ''
+
+        // inject the route
+        data.route_aggregate['route'] = data.route;
+        rows += aggregate_row_template(data.route_aggregate);
+
         $.each(data.stop_stats, function(index, value) {
           // inject the line name into this data structure
           value.route = data.route;
@@ -115,10 +132,8 @@
           rows += stop_row_template(value);
         });
 
-        console.log(rows);
-
+        // populate
         $('#data-table > tbody').append(rows);
-
       };
 
       $(function() {
