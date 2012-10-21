@@ -8,7 +8,7 @@ class AttrObj(object):
         self.__dict__.update(**kwargs)
 
 
-def query(data, headway_torelance=300):
+def query(data, headway_tolerance=300):
     grouped = []
     data = sorted(data, key=lambda x: x.stop_id)
     for k,g in itertools.groupby(data, key=lambda x: x.stop_id):
@@ -18,7 +18,7 @@ def query(data, headway_torelance=300):
     result = []
     for k, lst in grouped:
         item0 = lst[0]
-        summary = summary_for_stop(lst, headway_torelance)
+        summary = summary_for_stop(lst, headway_tolerance)
         st = dict(
             stop_id = item0.stop_id,
             stop_name = item0.stop_name,
@@ -29,7 +29,7 @@ def query(data, headway_torelance=300):
                 rank = 3,
             ),
             headway_index = dict(
-                value = "%.2f" % summary.headway_index,
+                value = "%.5f" % summary.headway_index,
                 rank = 3,
             ),
             percent_tolerable_headway= dict(
@@ -37,7 +37,7 @@ def query(data, headway_torelance=300):
                 rank = 3,
             ),
             std_dev_headway = dict(
-                value = "%.2f" % float(summary.std_dev_headway/60.0),
+                value = "%.5f" % float(summary.std_dev_headway/60.0),
                 rank = 3,
             ),
         )
@@ -50,7 +50,7 @@ def query(data, headway_torelance=300):
     rank(result, 'std_dev_headway')
 
     # summary for all
-    summary = summary_for_stop(data, headway_torelance)
+    summary = summary_for_stop(data, headway_tolerance)
 
     return {
       "route_aggregate": dict(
@@ -70,13 +70,13 @@ def query(data, headway_torelance=300):
       "stop_stats": result,
       }
 
-def summary_for_stop(lst, headway_torelance):
+def summary_for_stop(lst, headway_tolerance):
     H = [x.headway for x in lst]
     N = len(H)
     ef = expected_frequency=effective_frequency(H)
     mean = float(sum(H)) / N
     hi = ef / mean
-    pth = sum(1 for h in H if h <= headway_torelance) / float(N)
+    pth = sum(1 for h in H if h <= headway_tolerance) / float(N)
     sd = std_dev(H)
 
     return AttrObj(
