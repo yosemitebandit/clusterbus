@@ -22,9 +22,10 @@ def query_headways():
 class TableView(webapp2.RequestHandler):
   def get(self):
     self.response.headers['Content-Type'] = 'text/html'
-    start = datetime.datetime.strptime('2012-10-11T06:30:00', "%Y-%m-%dT%H:%M:%S")
+    start = datetime.datetime.strptime('2012-10-11T06:45:00', "%Y-%m-%dT%H:%M:%S")
     end = datetime.datetime.strptime('2012-10-11T08:30:00', "%Y-%m-%dT%H:%M:%S")
-    worst_arrivals = VehicleArrival.all().filter("arrival > ", start).filter("arrival < ", end).order('-headway').run(limit=10)
+    route = '10'
+    worst_arrivals = VehicleArrival.all().filter("arrival > ", start).filter("arrival < ", end).filter("route = ", route)
     template_values = {
       'worst_arrivals': worst_arrivals,
 	}
