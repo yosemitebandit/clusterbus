@@ -74,10 +74,10 @@
               <th>Line</th>
               <th>Stop</th>
               <th>Timespan</th>
-              <th>Expected frequency (minutes)</th>
+              <th>Expected frequency</th>
               <th>Reliability score</th>
               <th>Percent tolerable headway</th>
-              <th>Headway standard deviation (minutes)</th>
+              <th>Headway standard deviation</th>
             </tr>
           </thead>
 
@@ -160,8 +160,8 @@
           // create a row and append
           //rows += stop_row_template(value);
           $('#data-table').dataTable().fnAddData([value.route, value.stop_name
-          	, value.time_label, value.expected_frequency.value, value.headway_index.value
-          	, value.percent_tolerable_headway.value, value.std_dev_headway.value]);
+          	, value.time_label, value.expected_frequency.value + ' min', value.headway_index.value
+          	, value.percent_tolerable_headway.value + '%', value.std_dev_headway.value + ' min']);
  
           
         });
@@ -218,6 +218,9 @@
 
 
       $(function() {
+      
+        //  drop the num records per page control..
+        $('#data-table_length > label').hide();
 
         /* initiate the maps
         */
