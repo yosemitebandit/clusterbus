@@ -165,7 +165,7 @@
  
           
         });
-        
+                
         // append to table
         //$('#data-table > tbody').append(rows);
       };
@@ -203,6 +203,8 @@
           callbacks_complete = 0;
           $('#loading-dialog').html('');
         }
+        
+        $('#data-table-container').fadeIn(800);
       };
 
 
@@ -240,6 +242,7 @@
         ];
 
         $('#route-selector').change(function() {
+          $('#data-table-container').hide();
           specified_route = $(this).find(':selected').text();
           update_data(specified_route);
 
