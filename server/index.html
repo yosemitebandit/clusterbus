@@ -4,9 +4,7 @@
     <link href='css/bootstrap.min.css' rel='stylesheet' />
     <link href='css/bootstrap-responsive.min.css' rel='stylesheet' />
     <link href='css/demo.css' rel='stylesheet' />
-    <!--
     <link href='css/DT_bootstrap.css' rel='stylesheet' />
-    -->
 
   </head>
 
@@ -125,10 +123,8 @@
     <script src='js/handlebars-1.0.rc.1.js'></script>
     <script src='js/underscore-min.js'></script>
     <script src='js/palette.js'></script>
-    <!--
     <script src='js/jquery.dataTables.js'></script>
     <script src='js/DT_bootstrap.js'></script>
-    -->
 
     <script>
 
@@ -162,12 +158,16 @@
           value.time_label = time_label;
           
           // create a row and append
-          rows += stop_row_template(value);
-          //$('#data-table').dataTable().fnAddData([
+          //rows += stop_row_template(value);
+          $('#data-table').dataTable().fnAddData([value.route, value.stop_name
+          	, value.time_label, value.expected_frequency.value, value.headway_index.value
+          	, value.percent_tolerable_headway.value, value.std_dev_headway.value]);
+ 
+          
         });
         
         // append to table
-        $('#data-table > tbody').append(rows);
+        //$('#data-table > tbody').append(rows);
       };
 
 
