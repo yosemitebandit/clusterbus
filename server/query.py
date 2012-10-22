@@ -29,7 +29,7 @@ def query(data, headway_tolerance=300):
                 rank = 3,
             ),
             headway_index = dict(
-                value = "%.5f" % summary.headway_index,
+                value = "%.2f" % summary.headway_index,
                 rank = 3,
             ),
             percent_tolerable_headway= dict(
@@ -37,7 +37,7 @@ def query(data, headway_tolerance=300):
                 rank = 3,
             ),
             std_dev_headway = dict(
-                value = "%.5f" % float(summary.std_dev_headway/60.0),
+                value = "%.2f" % float(summary.std_dev_headway/60.0),
                 rank = 3,
             ),
         )
