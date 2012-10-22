@@ -129,7 +129,7 @@
       // init a palette
       var palette = new Palette(0.95, 0.95);
 
-      var all_stops = [];
+      //var all_stops = [];
 
       var stop_source = $('#stop-row-template').html();
       var stop_row_template = Handlebars.compile(stop_source);
@@ -137,7 +137,7 @@
       var aggregate_source = $('#aggregate-row-template').html();
       var aggregate_row_template = Handlebars.compile(aggregate_source);
 
-      function populate_table(data, time_label) {
+      function populate_table(time_label, data) {
         // kill the spinner..
 
         var rows = '';
@@ -195,11 +195,13 @@
       };
 
 
+      /*
       function extend_results(data) {
         $.each(data.stop_stats, function(index, value) {
           all_stops.push(value);
         });
       };
+      */
 
       all_markers = [];
 
@@ -257,12 +259,13 @@
             , success: function(data) {
 
               if (data.route == specified_route) {
-                extend_results(data);
-                populate_table(data, maps[i][2]);
+                //extend_results(data);
+                //populate_table(data, maps[i][2]);
 
                 for (var i in maps) {
                   if (data.start == maps[i][1][0] && data.end == maps[i][1][1]) {
                     populate_map(maps[i][0], data);
+                    populate_table(maps[i][2], data);
                   }
                 }
 
