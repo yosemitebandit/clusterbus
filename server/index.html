@@ -21,7 +21,7 @@
         </li>
       </ul>
 
-      <div id='maps' class='row show-grid'>
+      <div id='maps-container' class='row show-grid'>
         <div class='span4'>
           <div class='map' id='map-one'>
           </div>
@@ -40,15 +40,15 @@
 
       <div id='map-labels' class='row'>
         <div class='span4'>
-          <p>Rush hour &ndash; weekdays, 7am-10am and 4pm-6pm</p>
+          <p>The AM rush &ndash; 6:30am-9:30am</p>
         </div>
 
         <div class='span4'>
-          <p>The calm &ndash; 11pm-3pm on weekdays</p>
+          <p>The midday calm &ndash; 9:30pm-4:30pm on weekdays</p>
         </div>
 
         <div class='span4'>
-          <p>Find me in the club &ndash; Friday and Saturday, 10pm-1am</p>
+          <p>Weekend troublemaking &ndash; 6am-7pm</p>
         </div>
       </div>
 
@@ -56,13 +56,22 @@
       <h4>Line metrics &ndash; the <span id='route-container' class='label label-success'>22</span> line</h4>
       -->
 
+      <select id='route-selector' class='span1'>
+        <option>10</option>
+        <option>19</option>
+        <option>22</option>
+      </select>
+
+      <span id='loading-dialog'>
+      </span>
+
       <div id='data-table-container'>
-        <h4>Highest variances by stop</h4>
         <table id='data-table' class='table table-hover'>
           <thead>
             <tr>
               <th>Line</th>
               <th>Stop</th>
+              <th>Timespan</th>
               <th>Expected frequency (minutes)</th>
               <th>Headway index</th>
               <th>Percent tolerable headway</th>
@@ -79,6 +88,7 @@
         <tr>
           <td>{{route}}</td>
           <td>{{stop_name}}</td>
+          <td>{{time_label}}</td>
           <td>{{expected_frequency.value}}</td>
           <td>{{headway_index.value}}</td>
           <td>{{percent_tolerable_headway.value}}%</td>
@@ -113,6 +123,9 @@
     <script src='js/palette.js'></script>
     <script>
 
+      // track progress of all callbacks..
+      callbacks_complete = 0;
+
       // init a palette
       var palette = new Palette(0.95, 0.95);
 
@@ -124,19 +137,20 @@
       var aggregate_source = $('#aggregate-row-template').html();
       var aggregate_row_template = Handlebars.compile(aggregate_source);
 
-      function populate_table(data) {
+      function populate_table(data, time_label) {
         // kill the spinner..
 
         var rows = '';
 
         // inject the route
-        data.route_aggregate['route'] = data.route;
+        //data.route_aggregate['route'] = data.route;
         // save the route aggregate
-        rows += aggregate_row_template(data.route_aggregate);
+        //rows += aggregate_row_template(data.route_aggregate);
 
         $.each(data.stop_stats, function(index, value) {
           // inject the line name into this data structure
           value.route = data.route;
+          value.time_label = time_label;
           // create a row and append
           rows += stop_row_template(value);
         });
@@ -155,15 +169,13 @@
 
           //var scaled_value = 0.4 * (value.headway_index.value - min_headway) / (max_headway - min_headway)
           var scaled_value = 0.4 * (max_headway - value.headway_index.value) / (max_headway - min_headway)
-          console.log(scaled_value);
           var color = '#' + palette.generate_hex_color(scaled_value);
-          console.log(color);
 
           var marker = new google.maps.Marker({
             position: new google.maps.LatLng(value.lat, value.lon)
             , icon: {
               path: google.maps.SymbolPath.CIRCLE
-              , fillOpacity: 0.2
+              , fillOpacity: 0.4
               , fillColor: color // 'ff0000'
               , strokeOpacity: 1.0
               , strokeColor: color // 'ff0000'
@@ -173,7 +185,13 @@
             }
             , map: map.map
           });
+          all_markers.push(marker);
         });
+
+        if (callbacks_complete == 3) {
+          callbacks_complete = 0;
+          $('#loading-dialog').html('');
+        }
       };
 
 
@@ -183,6 +201,8 @@
         });
       };
 
+      all_markers = [];
+
 
       $(function() {
 
@@ -191,7 +211,6 @@
         // start and end times for each map
         var am_rush = ['2012-10-11T06:30:00', '2012-10-11T09:30:00']
         var midday = ['2012-10-11T09:30:00', '2012-10-11T16:30:00']
-        // not quite weekend..
         var weekend = ['2012-10-13T06:00:00', '2012-10-13T19:00:00']
 
         var sf = [37.778313, -122.44957, 11];
@@ -199,45 +218,62 @@
         var map_two = map_factory('#map-two', sf);
         var map_three = map_factory('#map-three', sf);
         // mm..global
-        maps = [[map_one, am_rush]
-          , [map_two, midday]
-          , [map_three, weekend]
+        maps = [[map_one, am_rush, 'AM rush']
+          , [map_two, midday, 'midday']
+          , [map_three, weekend, 'weekend']
         ];
 
-        /* populate the maps
-        pool all the stop_stats responses
-        */
-        var endpoint = 'http://cluster-bus.appspot.com/api';
-        // flip json/jsonp !!
-        //var endpoint = 'data.json';
+        $('#route-selector').change(function() {
+          specified_route = $(this).find(':selected').text();
+          update_data(specified_route);
 
+          // clear table
+          $('#data-table > tbody').html('');
+
+          // clear old markers
+          for (i in all_markers) {
+            all_markers[i].setMap(null);
+          }
+
+        }).change();
+
+      });
+
+      
+      function update_data(route) {
+        $('#loading-dialog').html('loading, one sec..');
+
+        var endpoint = 'http://cluster-bus.appspot.com/api';
         for (var i in maps) {
+
           var req = $.ajax({
             url: endpoint
-            // flip back to jsonp
             , dataType: 'jsonp'
             , data: {
               start: maps[i][1][0]
               , end: maps[i][1][1]
-              , route: '22'
+              , route: route
             }
             , success: function(data) {
-              extend_results(data);
 
-              populate_table(data);
+              if (data.route == specified_route) {
+                extend_results(data);
+                populate_table(data, maps[i][2]);
 
-              for (var i in maps) {
-                console.log(data.start);
-                if (data.start == maps[i][1][0] && data.end == maps[i][1][1]) {
-                  populate_map(maps[i][0], data);
+                for (var i in maps) {
+                  if (data.start == maps[i][1][0] && data.end == maps[i][1][1]) {
+                    populate_map(maps[i][0], data);
+                  }
                 }
+
+                callbacks_complete += 1;
               }
 
             }
           });
-        }
 
-      });
+        }
+      };
 
 
       /* synching all map controls
