@@ -9,16 +9,9 @@ import query
 
 class MainPage(webapp2.RequestHandler):
   def get(self):
-  	self.response.headers['Content-Type'] = 'text/html'
-  	self.response.out.write("""
-          <html>
-            <body>
-              <h1>Hello, clusterbus!</h1>
-            </body>
-          </html>""")
-
-def query_headways():
-  """hello"""
+  	template_values = { }
+  	path = os.path.join(os.path.dirname(__file__), 'index.html')
+  	self.response.out.write(template.render(path, template_values))
 
 class TableView(webapp2.RequestHandler):
   def get(self):
@@ -33,7 +26,7 @@ class TableView(webapp2.RequestHandler):
 	}
     path = os.path.join(os.path.dirname(__file__), 'tabletest.html')
     self.response.out.write(template.render(path, template_values))
-    
+ 
 
 class API(webapp2.RequestHandler):
   def get(self):
@@ -47,6 +40,10 @@ class API(webapp2.RequestHandler):
     callback = self.request.get('callback', None)
 
     arrivals = VehicleArrival.all().filter("arrival > ", start).filter("arrival < ", end).filter("route = ", route)
+    if arrivals.count() == 0:
+        self.response.out.write("[]")
+        return
+        
     processed_arrivals = query.query(arrivals)
     
     response_data = {
@@ -71,28 +68,6 @@ class DeleteRoute(webapp2.RequestHandler):
   def get(self):
   	route = self.request.get('route')
   	self.response.out.write("Deleted route %s (not really, just a placeholder for a database cleanup method)" % route )
-
-
-class APItest(webapp2.RequestHandler):
-  def get(self):
-    self.response.headers['Content-Type'] = 'application/json'
-    
-    #current defaults are based on sample data
-    #to do: change to intelligent defaults e.g. today, all routes
-    start = self.request.get('start', '2012-10-11T06:30:00' )
-    end = self.request.get('end', '2012-10-11T09:30:00')
-    route = self.request.get('route', '10')
-    callback = self.request.get('callback', None)
-    
-    path = os.path.join(os.path.dirname(__file__), 'data.json')
-    with open(path) as f:
-        response_data = f.read()
-
-    # wrap as JSONP if callback is specified
-    if callback:
-        response_data = '%s(%s);' % (callback, response_data)
-
-    self.response.out.write(response_data)
 
 
 app = webapp2.WSGIApplication([('/', MainPage),
