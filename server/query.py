@@ -76,7 +76,8 @@ def summary_for_stop(lst, headway_tolerance):
     ef = expected_frequency=effective_frequency(H)
     mean = float(sum(H)) / N
     hi = ef / mean
-    pth = sum(1 for h in H if h <= headway_tolerance) / float(N)
+    threshold = mean + headway_tolerance
+    pth = sum(1 for h in H if h <= threshold) / float(N)
     sd = std_dev(H)
 
     return AttrObj(
