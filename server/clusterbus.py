@@ -9,16 +9,9 @@ import query
 
 class MainPage(webapp2.RequestHandler):
   def get(self):
-  	self.response.headers['Content-Type'] = 'text/html'
-  	self.response.out.write("""
-          <html>
-            <body>
-              <h1>Hello, clusterbus!</h1>
-            </body>
-          </html>""")
-
-def query_headways():
-  """hello"""
+  	template_values = { }
+  	path = os.path.join(os.path.dirname(__file__), 'index.html')
+  	self.response.out.write(template.render(path, template_values))
 
 class TableView(webapp2.RequestHandler):
   def get(self):
@@ -33,7 +26,7 @@ class TableView(webapp2.RequestHandler):
 	}
     path = os.path.join(os.path.dirname(__file__), 'tabletest.html')
     self.response.out.write(template.render(path, template_values))
-    
+ 
 
 class API(webapp2.RequestHandler):
   def get(self):
