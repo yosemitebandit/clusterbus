@@ -151,10 +151,11 @@
           // inject the line name into this data structure
           value.route = data.route;
           value.time_label = time_label;
+          
           // create a row and append
           rows += stop_row_template(value);
         });
-
+        
         // append to table
         $('#data-table > tbody').append(rows);
       };

@@ -11,7 +11,8 @@ class MainPage(webapp2.RequestHandler):
   def get(self):
   	template_values = { }
   	path = os.path.join(os.path.dirname(__file__), 'index.html')
-  	self.response.out.write(template.render(path, template_values))
+  	with open(path, 'rb') as f:
+  		self.response.out.write(f.read())
 
 class TableView(webapp2.RequestHandler):
   def get(self):
