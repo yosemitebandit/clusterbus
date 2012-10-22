@@ -4,6 +4,10 @@
     <link href='css/bootstrap.min.css' rel='stylesheet' />
     <link href='css/bootstrap-responsive.min.css' rel='stylesheet' />
     <link href='css/demo.css' rel='stylesheet' />
+    <!--
+    <link href='css/DT_bootstrap.css' rel='stylesheet' />
+    -->
+
   </head>
 
   <body>
@@ -56,10 +60,10 @@
       <h4>Line metrics &ndash; the <span id='route-container' class='label label-success'>22</span> line</h4>
       -->
 
+	  <h5>Choose a line</h5>
       <select id='route-selector' class='span1'>
-        <option>10</option>
-        <option>19</option>
         <option>22</option>
+        <option>19</option>
       </select>
 
       <span id='loading-dialog'>
@@ -73,7 +77,7 @@
               <th>Stop</th>
               <th>Timespan</th>
               <th>Expected frequency (minutes)</th>
-              <th>Headway index</th>
+              <th>Reliability score</th>
               <th>Percent tolerable headway</th>
               <th>Headway standard deviation (minutes)</th>
             </tr>
@@ -121,6 +125,11 @@
     <script src='js/handlebars-1.0.rc.1.js'></script>
     <script src='js/underscore-min.js'></script>
     <script src='js/palette.js'></script>
+    <!--
+    <script src='js/jquery.dataTables.js'></script>
+    <script src='js/DT_bootstrap.js'></script>
+    -->
+
     <script>
 
       // track progress of all callbacks..
@@ -154,6 +163,7 @@
           
           // create a row and append
           rows += stop_row_template(value);
+          //$('#data-table').dataTable().fnAddData([
         });
         
         // append to table
@@ -163,7 +173,7 @@
 
       function populate_map(map, data) {
         // hardcoded scale
-        var max_headway = 2.0;
+        var max_headway = 1.75;
         var min_headway = 1.0;
 
         $.each(data.stop_stats, function(index, value) {
